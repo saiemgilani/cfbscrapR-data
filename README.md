@@ -1,5 +1,8 @@
-# cfbscrapR-data
- cfbscrapR data 2014-2020
+## __cfbscrapR-data__ 
+[![Twitter Follow](https://img.shields.io/twitter/follow/cfbscrapR?style=social)](https://twitter.com/cfbscrapR) [![Twitter Follow](https://img.shields.io/twitter/follow/saiemgilani?style=social)](https://twitter.com/saiemgilani)
+
+### __cfbscrapR data 2014-2020__
+![cfbscrapr-tile-1-300.png](https://raw.githubusercontent.com/saiemgilani/cfbscrapR/master/man/figures/cfbscrapr-tile-1-300.png)
 
 ```
 seasons <- 2014:2020
