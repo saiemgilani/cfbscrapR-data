@@ -1,8 +1,8 @@
 ## __cfbscrapR-data__ 
 [![Twitter Follow](https://img.shields.io/twitter/follow/cfbscrapR?style=social)](https://twitter.com/cfbscrapR) [![Twitter Follow](https://img.shields.io/twitter/follow/saiemgilani?style=social)](https://twitter.com/saiemgilani)
 
-### __cfbscrapR data 2014-2020__
 ![social_card_data_repo.png](https://raw.githubusercontent.com/saiemgilani/cfbscrapR-data/master/social_card_data_repo.png)
+### __cfbscrapR data 2014-2020__
 
 ## RDS
 ```
