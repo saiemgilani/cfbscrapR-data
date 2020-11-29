@@ -1,14 +1,15 @@
 library(cfbscrapR)
 library(tidyverse)
+library(git2r)
 # New Year Data Repo Recreation
 
 # Play-by-Play Data Pull --------------------------------------------------
 
+repo <- git2r::repository()
 
 week_vector = 1:13
 year_vector = 2020
 version = "1.0.3"
-min(year_vector)
 weekly_year_df = expand.grid(year = year_vector, week = week_vector)
 ### scrape yearly
 year_split = split(weekly_year_df, weekly_year_df$year)
@@ -23,7 +24,7 @@ for (i in 1:length(year_split)) {
       pbp = purrr::map2(
         .x = year,
         .y = week,
-        cfb_pbp_data,
+        cfbscrapR::cfb_pbp_data,
         season_type = 'both',
         epa_wpa=TRUE
         
@@ -33,23 +34,19 @@ for (i in 1:length(year_split)) {
 
 yr_epa_season_run <- proc.time() - yr_epa_start_time
 print(yr_epa_season_run['elapsed']/60)
-year_split19 = lapply(year_split, function(x) {
+year_split20 = lapply(year_split, function(x) {
   x %>% tidyr::unnest(pbp, names_repair="minimal")
 })
 
-all_years_19 = dplyr::bind_rows(year_split19)
-all_years_19 <- all_years_19 %>% 
+all_years_20 = dplyr::bind_rows(year_split20)
+all_years_20 <- all_years_20 %>% 
   dplyr::select(-.data$year...1, -.data$week...2) %>% 
   dplyr::rename(year = .data$year...3, week = .data$week...4)
 
-saveRDS(all_years_19, glue::glue("all_years_2020_{min(week_vector)}_{max(week_vector)}.rds"))
 
 # Player Stats ------------------------------------------------------------
 
-
-library(tidyverse)
-library(cfbscrapR)
-pbp <- all_years_19 %>% dplyr::filter(year==2020)
+pbp <- all_years_20 %>% dplyr::filter(year==2020)
 df_game_ids <- unique(pbp$game_id)
 df_player_stats_2020<- data.frame()
 for(i in 1:length(df_game_ids)){
@@ -80,9 +77,19 @@ arrow::write_parquet(df_player_stats_2020 %>% dplyr::filter(.data$season == 2020
                      'player_stats/parquet/player_stats_2020.parquet')
 
 
-df_year_players20 <- all_years_19 %>% 
-  left_join(df_player_stats_2020, 
-            by = c('id_play'="play_id",'game_id','drive_id','period','down','distance','yards_to_goal','week'))
+
+
+git2r::add(repo, glue::glue("player_stats/rds/player_stats_2020.rds"))
+git2r::add(repo, glue::glue("player_stats/csv/player_stats_2020.csv"))
+git2r::add(repo, glue::glue("player_stats/parquet/player_stats_2020.parquet"))
+
+git2r::commit(repo, "update player stats")
+
+
+df_year_players20 <- all_years_20 %>% 
+  dplyr::left_join(df_player_stats_2020, 
+                   by = c('id_play'="play_id",'game_id','drive_id',
+                          'period','down','distance','yards_to_goal','week'))
 
 
 df_team_rosters_2020 <- read.csv('rosters/csv/rosters_2020.csv')
@@ -160,7 +167,7 @@ df_year_players_pos20 <- df_year_players20 %>%
                    by = c("year"="season", "touchdown_player_id" = "athlete_id")) 
 
 df_year_players_pos20 <- df_year_players_pos20 %>% 
-  mutate(position_target = ifelse(!is.na(position_reception), 
+  dplyr::mutate(position_target = ifelse(!is.na(position_reception), 
                                   position_reception, position_target)) %>% 
   as.data.frame()
 
@@ -328,7 +335,7 @@ play_stats_player_columns = c(
 
 
 df_year_players_pos20 <- df_year_players_pos20 %>% 
-  select(
+  dplyr::select(
     dplyr::all_of(play_columns),
     dplyr::all_of(model_columns),
     dplyr::all_of(series_columns),
@@ -343,12 +350,14 @@ df_year_players_pos20 <- df_year_players_pos20 %>%
     dplyr::all_of(penalty_columns),
     dplyr::all_of(lag_series_columns)
   )
+
+# Update games in data repo file ------------------------------------------
+
 game_ids <- read.csv('data/games_in_data_repo.csv')
 df_game_ids <- df_year_players_pos20 %>% 
   dplyr::distinct(game_id, year, week, home, away) %>% 
   as.data.frame() 
 df_game_ids <- dplyr::bind_rows(df_game_ids, game_ids)
-
 
 df_game_ids <- df_game_ids %>% 
   dplyr::distinct(game_id, year, week, home, away) %>% 
@@ -356,8 +365,17 @@ df_game_ids <- df_game_ids %>%
   dplyr::arrange(-year, -week, home, away, game_id)
 
 write.csv(df_game_ids, 'data/games_in_data_repo.csv')
+repo <- git2r::repository()
+git2r::config(repo, user.name="Saiem Gilani",user.email="saiem.gilani@gmail.com")
+git2r::config(repo)
 
+git2r::add(repo, "data/games_in_data_repo.csv")
+git2r::commit(repo, "update games in data repo file")
 write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz'), row.names = FALSE)
-saveRDS(df_year_players_pos20,'data/rds/pbp_players_pos_2020.rds')
-arrow::write_parquet(df_year_players_pos20,'data/parquet/pbp_players_pos_2020.parquet')
+saveRDS(df_year_players_pos20,glue::glue('data/rds/pbp_players_pos_2020.rds'))
+arrow::write_parquet(df_year_players_pos20,glue::glue('data/parquet/pbp_players_pos_2020.parquet'))
 
+git2r::add(repo, glue::glue('data/rds/pbp_players_pos_2020.rds'))
+git2r::add(repo, glue::glue('data/parquet/pbp_players_pos_2020.parquet'))
+
+git2r::commit(repo, glue::glue("update play-by-play weeks thru {max(week_vector)}"))
