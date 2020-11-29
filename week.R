@@ -90,72 +90,74 @@ df_team_rosters_2020 <- read.csv('rosters/csv/rosters_2020.csv')
 
 
 df_year_players_pos20 <- df_year_players20 %>% 
-  left_join(df_team_rosters_2020 %>% select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)),
-            by = c("year"="season", "reception_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)),
-            by = c("year"="season", "target_player_id" = "athlete_id"), suffix=c("_reception","_target")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_completion = position),
-            by = c("year"="season", "completion_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_incompletion = position),
-            by = c("year"="season", "incompletion_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_sack_taken = position),
-            by = c("year"="season", "sack_taken_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_sack = position),
-            by = c("year"="season", "sack_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_interception_thrown = position),
-            by = c("year"="season", "interception_thrown_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_interception = position),
-            by = c("year"="season", "interception_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_fumble = position),
-            by = c("year"="season", "fumble_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_fumble_forced = position),
-            by = c("year"="season", "fumble_forced_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_fumble_recovered = position),
-            by = c("year"="season", "fumble_recovered_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_pass_breakup = position),
-            by = c("year"="season", "pass_breakup_player_id" = "athlete_id")) %>% 
   dplyr::left_join(df_team_rosters_2020 %>% 
-              dplyr::select(season, athlete_id, position) %>% 
-              dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              dplyr::rename(position_rush = position),
-            by = c("year"="season", "rush_player_id" = "athlete_id")) %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)),
+                   by = c("year"="season", "reception_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)),
+                   by = c("year"="season", "target_player_id" = "athlete_id"), suffix=c("_reception","_target")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_completion = position),
+                   by = c("year"="season", "completion_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_incompletion = position),
+                   by = c("year"="season", "incompletion_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_sack_taken = position),
+                   by = c("year"="season", "sack_taken_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_sack = position),
+                   by = c("year"="season", "sack_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_interception_thrown = position),
+                   by = c("year"="season", "interception_thrown_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_interception = position),
+                   by = c("year"="season", "interception_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_fumble = position),
+                   by = c("year"="season", "fumble_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_fumble_forced = position),
+                   by = c("year"="season", "fumble_forced_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_fumble_recovered = position),
+                   by = c("year"="season", "fumble_recovered_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_pass_breakup = position),
+                   by = c("year"="season", "pass_breakup_player_id" = "athlete_id")) %>% 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_rush = position),
+                   by = c("year"="season", "rush_player_id" = "athlete_id")) %>% 
   dplyr::left_join(df_team_rosters_2020 %>% 
                      dplyr::select(season, athlete_id, position) %>% 
                      dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
                      dplyr::rename(position_touchdown = position),
-              by = c("year"="season", "touchdown_player_id" = "athlete_id")) 
+                   by = c("year"="season", "touchdown_player_id" = "athlete_id")) 
 
 df_year_players_pos20 <- df_year_players_pos20 %>% 
   mutate(position_target = ifelse(!is.na(position_reception), 
@@ -355,7 +357,7 @@ df_game_ids <- df_game_ids %>%
 
 write.csv(df_game_ids, 'data/games_in_data_repo.csv')
 
-write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz'),append = FALSE, row.names = FALSE)
+write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz'), row.names = FALSE)
 saveRDS(df_year_players_pos20,'data/rds/pbp_players_pos_2020.rds')
 arrow::write_parquet(df_year_players_pos20,'data/parquet/pbp_players_pos_2020.parquet')
 
