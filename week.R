@@ -1,6 +1,6 @@
 library(cfbscrapR)
 library(tidyverse)
-# Full Data Repo Recreation
+# New Year Data Repo Recreation
 
 # Play-by-Play Data Pull --------------------------------------------------
 
@@ -146,16 +146,16 @@ df_year_players_pos20 <- df_year_players20 %>%
               mutate(athlete_id = as.numeric(athlete_id)) %>% 
               rename(position_pass_breakup = position),
             by = c("year"="season", "pass_breakup_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_rush = position),
+  dplyr::left_join(df_team_rosters_2020 %>% 
+              dplyr::select(season, athlete_id, position) %>% 
+              dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+              dplyr::rename(position_rush = position),
             by = c("year"="season", "rush_player_id" = "athlete_id")) %>% 
-  left_join(df_team_rosters_2020 %>% 
-              select(season, athlete_id, position) %>% 
-              mutate(athlete_id = as.numeric(athlete_id)) %>% 
-              rename(position_touchdown = position),
-            by = c("year"="season", "touchdown_player_id" = "athlete_id")) 
+  dplyr::left_join(df_team_rosters_2020 %>% 
+                     dplyr::select(season, athlete_id, position) %>% 
+                     dplyr::mutate(athlete_id = as.numeric(athlete_id)) %>% 
+                     dplyr::rename(position_touchdown = position),
+              by = c("year"="season", "touchdown_player_id" = "athlete_id")) 
 
 df_year_players_pos20 <- df_year_players_pos20 %>% 
   mutate(position_target = ifelse(!is.na(position_reception), 
@@ -341,8 +341,21 @@ df_year_players_pos20 <- df_year_players_pos20 %>%
     dplyr::all_of(penalty_columns),
     dplyr::all_of(lag_series_columns)
   )
+game_ids <- read.csv('data/games_in_data_repo.csv')
+df_game_ids <- df_year_players_pos20 %>% 
+  dplyr::distinct(game_id, year, week, home, away) %>% 
+  as.data.frame() 
+df_game_ids <- dplyr::bind_rows(df_game_ids, game_ids)
 
-write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz', row.names = FALSE))
+
+df_game_ids <- df_game_ids %>% 
+  dplyr::distinct(game_id, year, week, home, away) %>% 
+  as.data.frame() %>% 
+  dplyr::arrange(-year, -week, home, away, game_id)
+
+write.csv(df_game_ids, 'data/games_in_data_repo.csv')
+
+write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz'),append = FALSE, row.names = FALSE)
 saveRDS(df_year_players_pos20,'data/rds/pbp_players_pos_2020.rds')
 arrow::write_parquet(df_year_players_pos20,'data/parquet/pbp_players_pos_2020.parquet')
 
