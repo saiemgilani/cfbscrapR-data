@@ -17,16 +17,9 @@ pbp <- purrr::map_df(seasons, function(x) {
 ```
 
 ## CSV (compressed)
-```
-seasons <- 2014:2020
-pbp <- purrr::map_df(seasons, function(x) {
-  readr::read_csv(
-    url(
-      glue::glue("https://raw.githubusercontent.com/saiemgilani/cfbscrapR-data/master/data/csv/pbp_players_pos_{x}.csv.gz")
-    )
-  )
-})
-```
+
+This has been removed from the repository on account of the size being too large.
+
 ## Parquet (arrow)
 ```
 seasons <- 2014:2020
