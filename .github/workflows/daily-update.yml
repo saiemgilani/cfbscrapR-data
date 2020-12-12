@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
     # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
-    - cron: '33 14 * * *'
+    - cron: '15 15 * * *'
     #- cron: '59 17 * * *'
 
 jobs:
@@ -13,7 +13,8 @@ jobs:
       GHUB: ${{ secrets.GHUB }}
       GH_PW: ${{ secrets.GH_PW }}
       CRAN_REPO: https://packagemanager.rstudio.com/all/__linux__/bionic/latest
-    
+      RENV_PATHS_ROOT: ~/.local/share/renv
+      
     strategy:
       matrix:
         r-version: [4.0.3]
@@ -24,12 +25,23 @@ jobs:
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '4.0.3'
+      - name: Install libcurl
+        run: sudo apt-get install libcurl4-openssl-dev
+      - name: Install httr
+        run: sudo apt-get install -y r-cran-httr
       - name: Install dependencies
         run: |
-          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","httr","nnet","mgcv","stats","utils","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "googlesheets4", "googledrive", "git2r"))
+          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","nnet","mgcv","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "git2r"))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("saiemgilani/cfbscrapR")
         shell: Rscript {0}
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-  
       - name: Morning
         run: Rscript "week.R"
       - name: Commit files
