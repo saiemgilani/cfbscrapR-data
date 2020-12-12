@@ -2,22 +2,20 @@ library(cfbscrapR)
 library(tidyverse)
 library(git2r)
 # New Year Data Repo Recreation
+repo <- git2r::repository('./') # Set up connection to repository folder
 
 # Play-by-Play Data Pull --------------------------------------------------
-
-repo <- git2r::repository()
-
-week_vector = 1:13
+week_vector = 1:15
 year_vector = 2020
 version = "1.0.3"
 weekly_year_df = expand.grid(year = year_vector, week = week_vector)
 ### scrape yearly
 year_split = split(weekly_year_df, weekly_year_df$year)
-year_split[[1]]
 
-yr_epa_start_time <- proc.time()
+# yr_epa_start_time <- proc.time()
 
 for (i in 1:length(year_split)) {
+  i=1
   print(paste0("Working on ", year_split[[i]][1,1]))
   year_split[[i]] = year_split[[i]] %>% 
     dplyr::mutate(
@@ -33,7 +31,7 @@ for (i in 1:length(year_split)) {
 }
 
 yr_epa_season_run <- proc.time() - yr_epa_start_time
-print(yr_epa_season_run['elapsed']/60)
+# print(yr_epa_season_run['elapsed']/60)
 year_split20 = lapply(year_split, function(x) {
   x %>% tidyr::unnest(pbp, names_repair="minimal")
 })
@@ -46,14 +44,15 @@ all_years_20 <- all_years_20 %>%
 
 # Player Stats ------------------------------------------------------------
 
-pbp <- all_years_20 %>% dplyr::filter(year==2020)
-df_game_ids <- unique(pbp$game_id)
+game_info <- cfbscrapR::cfb_game_info(year_vector)
+df_game_ids <- unique(game_info$game_id)
 df_player_stats_2020<- data.frame()
 for(i in 1:length(df_game_ids)){
   print(paste0("Working on ", i,"/",length(df_game_ids),": ", df_game_ids[i]))
   df_play_stats <- cfbscrapR::cfb_play_stats_player(game_id = df_game_ids[i])
   df_player_stats_2020 <- rbind(df_player_stats_2020, df_play_stats)
 }
+
 df_player_stats_2020 <- df_player_stats_2020 %>%
   dplyr::mutate(drive_id = as.numeric(drive_id),
                 reception_player_id = as.integer(reception_player_id),
@@ -76,14 +75,10 @@ readr::write_csv(df_player_stats_2020 %>% dplyr::filter(.data$season == 2020), g
 arrow::write_parquet(df_player_stats_2020 %>% dplyr::filter(.data$season == 2020),
                      'player_stats/parquet/player_stats_2020.parquet')
 
-
-
-
-git2r::add(repo, glue::glue("player_stats/rds/player_stats_2020.rds"))
-git2r::add(repo, glue::glue("player_stats/csv/player_stats_2020.csv"))
-git2r::add(repo, glue::glue("player_stats/parquet/player_stats_2020.parquet"))
-
-git2r::commit(repo, "update player stats")
+git2r::add(repo, glue::glue("player_stats/*"))
+git2r::commit(repo, message = glue::glue("Updated Player Stats {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
+git2r::pull(repo) # pull repo (and pray there are no merge commits)
+git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
 
 
 df_year_players20 <- all_years_20 %>% 
@@ -352,30 +347,27 @@ df_year_players_pos20 <- df_year_players_pos20 %>%
   )
 
 # Update games in data repo file ------------------------------------------
-
+library(tidyverse)
 game_ids <- read.csv('data/games_in_data_repo.csv')
-df_game_ids <- df_year_players_pos20 %>% 
-  dplyr::distinct(game_id, year, week, home, away) %>% 
-  as.data.frame() 
-df_game_ids <- dplyr::bind_rows(df_game_ids, game_ids)
-
-df_game_ids <- df_game_ids %>% 
+df_game_ids <- dplyr::bind_rows(
+  as.data.frame(dplyr::distinct(df_year_players_pos20 %>% 
+                                  dplyr::select(game_id, year, week, home, away))), game_ids) %>% 
   dplyr::distinct(game_id, year, week, home, away) %>% 
   as.data.frame() %>% 
   dplyr::arrange(-year, -week, home, away, game_id)
 
+df_year_players_pos20 <- df_year_players_pos20 %>% 
+  dplyr::mutate_at(c("id_play","half","down_end","ppa","id_drive"), as.numeric)
 write.csv(df_game_ids, 'data/games_in_data_repo.csv')
-repo <- git2r::repository()
-git2r::config(repo, user.name="Saiem Gilani",user.email="saiem.gilani@gmail.com")
-git2r::config(repo)
-
-git2r::add(repo, "data/games_in_data_repo.csv")
-git2r::commit(repo, "update games in data repo file")
-write.csv(df_year_players_pos20,glue::glue('data/csv/pbp_players_pos_2020.csv.gz'), row.names = FALSE)
 saveRDS(df_year_players_pos20,glue::glue('data/rds/pbp_players_pos_2020.rds'))
 arrow::write_parquet(df_year_players_pos20,glue::glue('data/parquet/pbp_players_pos_2020.parquet'))
 
-git2r::add(repo, glue::glue('data/rds/pbp_players_pos_2020.rds'))
-git2r::add(repo, glue::glue('data/parquet/pbp_players_pos_2020.parquet'))
+git2r::add(repo, 'data/*') # add specific files to staging of commit
+git2r::commit(repo, message = glue::glue("Updated {year_vector} Play-by-Play thru week {max(week_vector)} at {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
+git2r::pull(repo) # pull repo (and pray there are no merge commits)
+git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
 
-git2r::commit(repo, glue::glue("update play-by-play weeks thru {max(week_vector)}"))
+message(paste('Successfully uploaded to GitHub values as of',Sys.time())) 
+
+
+
