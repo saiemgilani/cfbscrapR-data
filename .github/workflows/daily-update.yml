@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
     # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
-    - cron: '48 14 * * *'
+    - cron: '00 14 * * *'
     #- cron: '59 17 * * *'
 
 jobs:
@@ -12,6 +12,7 @@ jobs:
     env:
       GHUB: ${{ secrets.GHUB }}
       GH_PW: ${{ secrets.GH_PW }}
+      CRAN_REPO: https://packagemanager.rstudio.com/all/__linux__/bionic/latest
     
     strategy:
       matrix:
@@ -20,9 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up R ${{ matrix.r-version }}
-        uses: r-lib/actions/setup-r@ffe45a39586f073cc2e9af79c4ba563b657dc6e3
+        uses: r-lib/actions/setup-r@v1
         with:
-          r-version: ${{ matrix.r-version }}
+          r-version: '4.0.3'
       - name: Install dependencies
         run: |
           install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","httr","nnet","mgcv","stats","utils","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite", ,"dplyr","purrr","arrow", "tidyr", "googlesheets4", "googledrive", "git2r"))
@@ -31,3 +32,13 @@ jobs:
         shell: Rscript {0}
       - name: Morning
         run: Rscript "week.R"
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Github Action"
+          git add .
+          git commit -m "morning update" || echo "No changes to commit"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  
