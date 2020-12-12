@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
     # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
-    - cron: '03 14 * * *'
+    - cron: '33 14 * * *'
     #- cron: '59 17 * * *'
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
           r-version: '4.0.3'
       - name: Install dependencies
         run: |
-          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","httr","nnet","mgcv","stats","utils","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite", ,"dplyr","purrr","arrow", "tidyr", "googlesheets4", "googledrive", "git2r"))
+          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","httr","nnet","mgcv","stats","utils","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "googlesheets4", "googledrive", "git2r"))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("saiemgilani/cfbscrapR")
         shell: Rscript {0}
