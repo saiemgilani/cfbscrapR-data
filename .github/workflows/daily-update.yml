@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
     # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
-    - cron: '00 14 * * *'
+    - cron: '03 14 * * *'
     #- cron: '59 17 * * *'
 
 jobs:
