@@ -1,0 +1,33 @@
+name: Daily Update
+
+on:
+  schedule:
+    # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
+    - cron: '40 13 * * *'
+    #- cron: '59 17 * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-18.04
+    env:
+      GHUB: ${{ secrets.GHUB }}
+      GH_PW: ${{ secrets.GH_PW }}
+    
+    strategy:
+      matrix:
+        r-version: [4.0.3]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up R ${{ matrix.r-version }}
+        uses: r-lib/actions/setup-r@ffe45a39586f073cc2e9af79c4ba563b657dc6e3
+        with:
+          r-version: ${{ matrix.r-version }}
+      - name: Install dependencies
+        run: |
+          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","httr","nnet","mgcv","stats","utils","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite", ,"dplyr","purrr","arrow", "tidyr", "googlesheets4", "googledrive", "git2r"))
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_github("saiemgilani/cfbscrapR")
+        shell: Rscript {0}
+      - name: Morning
+        run: Rscript "week.R"
