@@ -1,0 +1,38 @@
+Package: cfbscrapR-data
+Title: A Scraping and Aggregating Interface to the CollegeFootballData API 
+Version: 1.0.4
+Authors@R: c(person('Saiem', 'Gilani', email = 'saiem.gilani@gmail.com', role = c('aut','cre')))
+Description: An R package for working with College Football Data. It is an R API wrapper around <https://collegefootballdata.com/>.
+Depends: R (>= 2.10)
+Imports: 
+    dplyr,
+    ggplot2,
+    ggrepel,
+    tidyr,
+    stringr,
+    stringi,
+    attempt,
+    assertthat,
+    httr,
+    jsonlite,
+    nnet, 
+    mgcv (>= 1.8-33),
+    purrr,
+    stats,
+    utils,
+    curl,
+    rlang,
+    tibble,
+    geosphere,
+    glue,
+    maps,
+    janitor
+URL: http://www.github.com/saiemgilani/cfbscrapR-data
+BugReports: http://www.github.com/saiemgilani/cfbscrapR-data/issues
+Encoding: UTF-8
+RoxygenNote: 7.1.1
+License: MIT + file LICENSE
+LazyData: true
+Suggests: 
+    testthat,
+    covr
