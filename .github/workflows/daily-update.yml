@@ -13,7 +13,7 @@ jobs:
       GHUB: ${{ secrets.GHUB }}
       GH_PW: ${{ secrets.GH_PW }}
       CRAN_REPO: https://packagemanager.rstudio.com/all/__linux__/bionic/latest
-      RENV_PATHS_ROOT: ~/.local/share/renv
+      
       
     strategy:
       matrix:
@@ -33,20 +33,6 @@ jobs:
           install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","nnet","mgcv","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "readr"))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("saiemgilani/cfbscrapR")
-        shell: Rscript {0}
-      - name: Cache packages
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.RENV_PATHS_ROOT }}
-          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-renv-  
-      - name: Restore packages
-        shell: Rscript {0}
-        run: |
-          cran_repo <- c("CRAN" = Sys.getenv("CRAN_REPO"))
-          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv", repos = cran_repo)
-          renv::restore(repos = cran_repo)      
       - name: Morning
         run: Rscript "week.R"
       - name: Commit files
