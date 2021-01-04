@@ -1,9 +1,9 @@
 name: Daily Update
 
 on:
-  schedule:
-    # says run at the 40th min, 15th hr UTC (11:49am ET) of every day
-    - cron: '03 14 * * *'
+  push:
+    branches:
+      - master
     #- cron: '59 17 * * *'
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1  
       - name: Install dependencies
         run: |
-          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","nnet","mgcv","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "git2r", "readr"))
+          install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","nnet","mgcv","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "readr"))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("saiemgilani/cfbscrapR")
         shell: Rscript {0}

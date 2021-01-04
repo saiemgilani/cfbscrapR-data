@@ -1,13 +1,13 @@
 library(cfbscrapR)
 library(tidyverse)
-library(git2r)
+# library(git2r)
 # New Year Data Repo Recreation
-repo <- git2r::repository('./') # Set up connection to repository folder
+# repo <- git2r::repository('./') # Set up connection to repository folder
 
 # Play-by-Play Data Pull --------------------------------------------------
-week_vector = 1:15
+week_vector = 1:18
 year_vector = 2020
-version = "1.0.3"
+version = "1.0.4"
 weekly_year_df = expand.grid(year = year_vector, week = week_vector)
 ### scrape yearly
 year_split = split(weekly_year_df, weekly_year_df$year)
@@ -75,11 +75,11 @@ readr::write_csv(df_player_stats_2020 %>% dplyr::filter(.data$season == 2020), g
 arrow::write_parquet(df_player_stats_2020 %>% dplyr::filter(.data$season == 2020),
                      'player_stats/parquet/player_stats_2020.parquet')
 
-git2r::add(repo, glue::glue("player_stats/*"))
-git2r::commit(repo, message = glue::glue("Updated Player Stats {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
-git2r::pull(repo) # pull repo (and pray there are no merge commits)
-git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
-
+# git2r::add(repo, glue::glue("player_stats/*"))
+# git2r::commit(repo, message = glue::glue("Updated Player Stats {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
+# git2r::pull(repo) # pull repo (and pray there are no merge commits)
+# git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
+# 
 
 df_year_players20 <- all_years_20 %>% 
   dplyr::left_join(df_player_stats_2020, 
@@ -362,10 +362,10 @@ write.csv(df_game_ids, 'data/games_in_data_repo.csv')
 saveRDS(df_year_players_pos20,glue::glue('data/rds/pbp_players_pos_2020.rds'))
 arrow::write_parquet(df_year_players_pos20,glue::glue('data/parquet/pbp_players_pos_2020.parquet'))
 
-git2r::add(repo, 'data/*') # add specific files to staging of commit
-git2r::commit(repo, message = glue::glue("Updated {year_vector} Play-by-Play thru week {max(week_vector)} at {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
-git2r::pull(repo) # pull repo (and pray there are no merge commits)
-git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
+# git2r::add(repo, 'data/*') # add specific files to staging of commit
+# git2r::commit(repo, message = glue::glue("Updated {year_vector} Play-by-Play thru week {max(week_vector)} at {Sys.time()} using cfbscrapR version {version}")) # commit the staged files with the chosen message
+# git2r::pull(repo) # pull repo (and pray there are no merge commits)
+# git2r::push(repo, credentials = git2r::cred_user_pass(username = Sys.getenv("GHUB"), password = Sys.getenv("GH_PW"))) # push commit
 
 message(paste('Successfully uploaded to GitHub values as of',Sys.time())) 
 
