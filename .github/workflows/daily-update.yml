@@ -32,6 +32,7 @@ jobs:
         run: |
           install.packages(c("remotes","ggplot2","ggrepel","stringr","stringi","attempt","assertthat","nnet","mgcv","rlang","tibble","geosphere","glue","maps","janitor", "jsonlite","dplyr","purrr","arrow", "tidyr", "readr"))
           remotes::install_github("saiemgilani/cfbscrapR")
+        shell: Rscript {0}  
       - name: Morning
         run: Rscript "week.R"
       - name: Commit files
