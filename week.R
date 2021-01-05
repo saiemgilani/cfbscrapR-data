@@ -35,7 +35,7 @@ for (i in 1:length(year_split)) {
   Sys.sleep(1)
 }
 
-yr_epa_season_run <- proc.time() - yr_epa_start_time
+# yr_epa_season_run <- proc.time() - yr_epa_start_time
 # print(yr_epa_season_run['elapsed']/60)
 year_split20 = lapply(year_split, function(x) {
   x %>% tidyr::unnest(pbp, names_repair="minimal")
