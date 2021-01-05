@@ -1,5 +1,10 @@
 library(cfbscrapR)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(purrr)
+library(arrow)
+library(glue)
 # library(git2r)
 # New Year Data Repo Recreation
 # repo <- git2r::repository('./') # Set up connection to repository folder
@@ -347,7 +352,7 @@ df_year_players_pos20 <- df_year_players_pos20 %>%
   )
 
 # Update games in data repo file ------------------------------------------
-library(tidyverse)
+
 game_ids <- read.csv('data/games_in_data_repo.csv')
 df_game_ids <- dplyr::bind_rows(
   as.data.frame(dplyr::distinct(df_year_players_pos20 %>% 
