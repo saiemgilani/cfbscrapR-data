@@ -1,10 +1,8 @@
 name: Daily Update
 
 on:
-  push:
-    branches:
-      - master
-    #- cron: '59 17 * * *'
+  schedule:
+    - cron: '5 4 1 1-8 *'
 
 jobs:
   update:
